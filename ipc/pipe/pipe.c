@@ -9,22 +9,23 @@ int main() {
 	char message[80];
 
 	pipe(fd);
-	if (p=fork()) {
-		close(fd[1]);
-		dup2(fd[0],0);
-		close(fd[0]);
-		while (fgets(message,80,stdin)!=NULL) {
-			printf("CHILD: %s",message);
+	if (p=fork()) {  							// Parent process returns non-zero value
+		close(fd[1]); 							// Close writing option for pipe file descriptor
+		dup2(fd[0],0); 							// Reading option of pipe is forwarded to stdin
+		close(fd[0]);  							// Close reading option for pipe file descriptor
+		while (fgets(message,10,stdin)!=NULL) {
+			printf("CHILD: %s",message);  
 		}
-	} else {
-		close(fd[0]);
-		dup2(fd[1],1);
-		close(fd[1]);
-		//write(1,"Hello\n",6);
-		printf("Hello\n");
-		printf("I'am child %d\n",getpid());
-		fflush(stdout);
-		close(1);
+	} else {									// Child process returns 0(zero)
+		close(fd[0]);							// Close reading option for pipe file descriptor
+		dup2(fd[1],1);							// Writing option of pipe is forwarded to stdout
+		close(fd[1]);							// Close writing option for pipe file descriptor
+		//write(1,"Hello\n",6);					// Write"Hello" to stdout(pipe) via file descriptor 1
+		printf("Hello\n");						// Write "Hello" to stdout(pipe)
+		printf("Hello\n");						// Write "Hello" to stdout(pipe)
+		printf("I'am child %d\n",getpid());		// Write process id to stdout(pipe)
+		fflush(stdout);							// Flush stdout(flush the buffer immediately)
+		close(1);								// Close stdout
 	}
 
 	return 0;
