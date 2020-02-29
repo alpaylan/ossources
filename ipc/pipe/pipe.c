@@ -8,19 +8,19 @@ int main() {
 	int fd[2];
 	char message[80];
 
-	pipe(fd);
+	pipe(fd);									// Pipe is opened with 1 file descriptor for read and 1 for write
 	if (p=fork()) {  							// Parent process returns non-zero value
-		close(fd[1]); 							// Close writing option for pipe file descriptor
+		close(fd[1]); 							// Close writing option for pipe
 		dup2(fd[0],0); 							// Reading option of pipe is forwarded to stdin
-		close(fd[0]);  							// Close reading option for pipe file descriptor
+		close(fd[0]);  							// Close reading option for pipe
 		while (fgets(message,10,stdin)!=NULL) {
 			printf("CHILD: %s",message);  
 		}
 	} else {									// Child process returns 0(zero)
-		close(fd[0]);							// Close reading option for pipe file descriptor
-		dup2(fd[1],1);							// Writing option of pipe is forwarded to stdout
-		close(fd[1]);							// Close writing option for pipe file descriptor
-		//write(1,"Hello\n",6);					// Write"Hello" to stdout(pipe) via file descriptor 1
+		close(fd[0]);							// Close reading option for pipe
+		dup2(fd[1],1);							// Pipe output is forwarded to stdout
+		close(fd[1]);							// Close writing option for pipe
+		//write(1,"Hello\n",6);					// Write"Hello" to stdout(pipe) via file descriptor 1(stdout)
 		printf("Hello\n");						// Write "Hello" to stdout(pipe)
 		printf("Hello\n");						// Write "Hello" to stdout(pipe)
 		printf("I'am child %d\n",getpid());		// Write process id to stdout(pipe)
